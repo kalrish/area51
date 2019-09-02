@@ -1,0 +1,55 @@
+---
+
+
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Description: MX records for email.
+
+
+Metadata:
+
+   AWS::CloudFormation::Interface:
+      ParameterGroups:
+         -
+            Label: DNS
+            Parameters:
+               - Domain
+         -
+            Label: Route 53
+            Parameters:
+               - HostedZoneId
+
+      ParameterLabels:
+         Domain:
+            default: Domain name
+         HostedZoneId:
+            default: Hosted zone
+
+
+Parameters:
+
+   Domain:
+      Description: DNS domain name.
+      Type: String
+
+   HostedZoneId:
+      Description: ID of the Route 53 hosted zone in which to create DNS records.
+      Type: AWS::Route53::HostedZone::Id
+
+
+Resources:
+
+   Record:
+      Type: AWS::Route53::RecordSet
+      Properties:
+         HostedZoneId:
+            Ref: HostedZoneId
+         Name:
+            Fn::Sub: ${Domain}.
+         Comment: Email
+         Type: MX
+         ResourceRecords:
+            - 10 in1-smtp.messagingengine.com
+            - 20 in2-smtp.messagingengine.com
+         TTL: '600'
