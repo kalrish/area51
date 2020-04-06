@@ -35,4 +35,4 @@ Resources:
          Type: MX
          ResourceRecords:
             Ref: Targets
-         TTL: '600'
+         TTL: '172800'
