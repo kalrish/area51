@@ -1,0 +1,74 @@
+---
+
+
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Description: DNS entry to redirect to GitHub pages.
+
+
+Metadata:
+
+   AWS::CloudFormation::Interface:
+      ParameterLabels:
+         HostedZoneId:
+            default: Hosted zone
+         Name:
+            default: Name
+         RootDomain:
+            default: Root domain
+         WebsiteCodename:
+            default: Website codename
+
+      ParameterGroups:
+         -
+            Label: Route 53
+            Parameters:
+               - HostedZoneId
+         -
+            Label: DNS
+            Parameters:
+               - RootDomain
+               - WebsiteCodename
+         -
+            Label: GitHub
+            Parameters:
+               - Name
+
+
+Parameters:
+
+   HostedZoneId:
+      Description: ID of the Route 53 hosted zone in which to create DNS records.
+      Type: AWS::Route53::HostedZone::Id
+
+   Name:
+      Description: Name of the GitHub user or organization.
+      Type: String
+
+   RootDomain:
+      Description: Root domain.
+      Type: String
+      AllowedPattern: ^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$
+      ConstraintDescription: must abide by domain name restrictions
+
+   WebsiteCodename:
+      Description: Base domain of the website.
+      Type: String
+
+
+Resources:
+
+   Record:
+      Type: AWS::Route53::RecordSet
+      Properties:
+         HostedZoneId:
+            Ref: HostedZoneId
+         Name:
+            Fn::Sub: ${WebsiteCodename}.www.${RootDomain}
+         Comment: GitHub pages
+         Type: CNAME
+         ResourceRecords:
+            -
+               Fn::Sub: ${Name}.github.io
+         TTL: '86400'
