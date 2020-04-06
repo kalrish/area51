@@ -73,4 +73,4 @@ Resources:
          ResourceRecords:
             -
                Fn::Sub: '"${VerificationValue}"'
-         TTL: '60'
+         TTL: '172800'
