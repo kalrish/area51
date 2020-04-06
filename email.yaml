@@ -52,4 +52,4 @@ Resources:
          ResourceRecords:
             - 10 in1-smtp.messagingengine.com
             - 20 in2-smtp.messagingengine.com
-         TTL: '600'
+         TTL: '172800'
