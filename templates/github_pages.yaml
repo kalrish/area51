@@ -1,0 +1,41 @@
+---
+
+
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Description: DNS setup for a site hosted on GitHub Pages
+
+
+Parameters:
+
+   FQDN:
+      Description: Fully qualified domain name of the website, including the root domain and any subdomains.
+      Type: String
+      AllowedPattern: '[^.]$'
+      ConstraintDescription: must not end with a period
+
+   GitHubName:
+      Description: Name of the GitHub user or organization that owns the site.
+      Type: String
+
+   HostedZoneId:
+      Description: ID of the Route 53 hosted zone in which to create DNS records.
+      Type: AWS::Route53::HostedZone::Id
+
+
+Resources:
+
+   Record:
+      Type: AWS::Route53::RecordSet
+      Properties:
+         HostedZoneId:
+            Ref: HostedZoneId
+         Name:
+            Fn::Sub: ${FQDN}.
+         Comment: GitHub Pages
+         Type: CNAME
+         ResourceRecords:
+            -
+               Fn::Sub: ${GitHubName}.github.io
+         TTL: '86400'
