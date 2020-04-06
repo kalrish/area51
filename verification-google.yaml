@@ -1,0 +1,76 @@
+---
+
+
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Description: DNS entry for Google Console verification.
+
+
+Metadata:
+
+   AWS::CloudFormation::Interface:
+      ParameterLabels:
+         HostedZoneId:
+            default: Hosted zone
+         RootDomain:
+            default: Root domain
+         VerificationValue:
+            default: Verification value
+         WebsiteCodename:
+            default: Website codename
+
+      ParameterGroups:
+         -
+            Label: Route 53
+            Parameters:
+               - HostedZoneId
+         -
+            Label: DNS
+            Parameters:
+               - RootDomain
+               - WebsiteCodename
+         -
+            Label: Google
+            Parameters:
+               - VerificationValue
+
+
+Parameters:
+
+   HostedZoneId:
+      Description: ID of the Route 53 hosted zone in which to create DNS records.
+      Type: AWS::Route53::HostedZone::Id
+
+   RootDomain:
+      Description: Root domain.
+      Type: String
+      AllowedPattern: ^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$
+      ConstraintDescription: must abide by domain name restrictions
+
+   VerificationValue:
+      Description: Value provided by Google.
+      Type: String
+      AllowedPattern: ^google-site-verification=.*$
+      ConstraintDescription: must be a valid Google site verification value
+
+   WebsiteCodename:
+      Description: Base domain of the website.
+      Type: String
+
+
+Resources:
+
+   Record:
+      Type: AWS::Route53::RecordSet
+      Properties:
+         HostedZoneId:
+            Ref: HostedZoneId
+         Name:
+            Fn::Sub: ${WebsiteCodename}.www.${RootDomain}
+         Comment: 'Verification: Google'
+         Type: TXT
+         ResourceRecords:
+            -
+               Fn::Sub: '"${VerificationValue}"'
+         TTL: '60'
