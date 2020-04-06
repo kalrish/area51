@@ -1,0 +1,52 @@
+---
+
+
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Description: DNS record to verify ownership of a site for Google
+
+
+Parameters:
+
+   FQDN:
+      Description: Fully qualified domain name of the website, including the root domain and any subdomains.
+      Type: String
+      AllowedPattern: '[^.]$'
+      ConstraintDescription: must not end with a period
+
+   HostedZoneId:
+      Description: ID of the Route 53 hosted zone in which to create DNS records.
+      Type: AWS::Route53::HostedZone::Id
+
+   Value:
+      Description: Ownership verification value provided by Google.
+      Type: String
+      AllowedPattern: ^google-site-verification=
+      ConstraintDescription: must be a valid Google site ownership verification value
+
+
+Conditions:
+
+   RootWebsite:
+      Fn::Equals:
+         -
+            Ref: WebsiteCodename
+         - ''
+
+
+Resources:
+
+   Record:
+      Type: AWS::Route53::RecordSet
+      Properties:
+         HostedZoneId:
+            Ref: HostedZoneId
+         Name:
+            Fn::Sub: ${FQDN}.
+         Comment: Google site ownership verification
+         Type: TXT
+         ResourceRecords:
+            -
+               Fn::Sub: '"${Value}"'
+         TTL: '172800'
