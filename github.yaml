@@ -57,6 +57,15 @@ Parameters:
       Type: String
 
 
+Conditions:
+
+   RootWebsite:
+      Fn::Equals:
+         -
+            Ref: WebsiteCodename
+         - ''
+
+
 Resources:
 
    Record:
@@ -65,7 +74,12 @@ Resources:
          HostedZoneId:
             Ref: HostedZoneId
          Name:
-            Fn::Sub: ${WebsiteCodename}.www.${RootDomain}
+            Fn::If:
+               - RootWebsite
+               -
+                  Fn::Sub: www.${RootDomain}
+               -
+                  Fn::Sub: ${WebsiteCodename}.www.${RootDomain}
          Comment: GitHub pages
          Type: CNAME
          ResourceRecords:
