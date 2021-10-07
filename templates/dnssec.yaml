@@ -1,0 +1,107 @@
+---
+
+
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Description: DNSSEC setup for a DNS domain
+
+
+Parameters:
+
+   HostedZoneId:
+      Description: ID of the Route 53 hosted zone on which to set up DNSSEC.
+      Type: AWS::Route53::HostedZone::Id
+
+
+Resources:
+
+   Setup:
+      DependsOn:
+         - KeySigningKey
+      Type: AWS::Route53::DNSSEC
+      Properties:
+         HostedZoneId:
+            Ref: HostedZoneId
+
+   KeySigningKey:
+      Type: AWS::Route53::KeySigningKey
+      Properties:
+         HostedZoneId:
+            Ref: HostedZoneId
+         KeyManagementServiceArn:
+            Fn::GetAtt:
+               - KmsKey
+               - Arn
+         Name: main
+         Status: ACTIVE
+
+   KmsKey:
+      Type: AWS::KMS::Key
+      Properties:
+         Description:
+            Fn::Sub: DNSSEC for Route 53 hosted zone ${HostedZoneId}
+         Enabled: true
+         KeySpec: ECC_NIST_P256
+         KeyUsage: SIGN_VERIFY
+         KeyPolicy:
+            Version: 2012-10-17
+            Statement:
+               -
+                  Sid: Administration
+                  Principal:
+                     AWS:
+                        -
+                           Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:root
+                  Action:
+                     - kms:CancelKeyDeletion
+                     - kms:CreateKey
+                     - kms:DescribeKey
+                     - kms:DisableKey
+                     - kms:DisableKeyRotation
+                     - kms:EnableKey
+                     - kms:EnableKeyRotation
+                     - kms:GetKeyPolicy
+                     - kms:GetKeyRotationStatus
+                     - kms:ListKeyPolicies
+                     - kms:ListResourceTags
+                     - kms:PutKeyPolicy
+                     - kms:ScheduleKeyDeletion
+                     - kms:TagResource
+                     - kms:UntagResource
+                     - kms:UpdateKeyDescription
+                  Resource:
+                     - '*'
+                  Condition:
+                     StringEquals:
+                        kms:CallerAccount:
+                           Ref: AWS::AccountId
+                  Effect: Allow
+               -
+                  Sid: Usage
+                  Principal:
+                     AWS:
+                        -
+                           Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:root
+                     Service:
+                        - dnssec-route53.amazonaws.com
+                  Action:
+                     - kms:DescribeKey
+                     - kms:GetPublicKey
+                     - kms:Sign
+                  Resource:
+                     - '*'
+                  Effect: Allow
+               -
+                  Sid: GrantCreation
+                  Principal:
+                     Service:
+                        - dnssec-route53.amazonaws.com
+                  Action:
+                     - kms:CreateGrant
+                  Resource:
+                     - '*'
+                  Condition:
+                     Bool:
+                        kms:GrantIsForAWSResource: true
+                  Effect: Allow
