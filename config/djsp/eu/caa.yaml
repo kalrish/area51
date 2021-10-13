@@ -1,0 +1,11 @@
+---
+
+template_path: caa.yaml
+
+stack_tags:
+   Purpose: dns
+   domain: {{ domain }}
+
+parameters:
+   FQDN: {{ domain }}
+   HostedZoneId: {{ hosted_zone_id }}
