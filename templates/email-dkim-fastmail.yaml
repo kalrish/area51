@@ -1,0 +1,53 @@
+---
+
+
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Description: DNS records for Fastmail DKIM
+
+
+Parameters:
+
+   Domain:
+      Description: DNS domain name.
+      Type: String
+
+   HostedZoneId:
+      Description: ID of the Route 53 hosted zone in which to create DNS records.
+      Type: AWS::Route53::HostedZone::Id
+
+
+Resources:
+
+   Record:
+      Type: AWS::Route53::RecordSetGroup
+      Properties:
+         Comment: Email DKIM
+         HostedZoneId:
+            Ref: HostedZoneId
+         RecordSets:
+            -
+               Name:
+                  Fn::Sub: fm1._domainkey.${Domain}.
+               Type: CNAME
+               ResourceRecords:
+                  -
+                     Fn::Sub: fm1.${Domain}.dkim.fmhosted.com
+               TTL: '172800'
+            -
+               Name:
+                  Fn::Sub: fm2._domainkey.${Domain}.
+               Type: CNAME
+               ResourceRecords:
+                  -
+                     Fn::Sub: fm2.${Domain}.dkim.fmhosted.com
+               TTL: '172800'
+            -
+               Name:
+                  Fn::Sub: fm3._domainkey.${Domain}.
+               Type: CNAME
+               ResourceRecords:
+                  -
+                     Fn::Sub: fm3.${Domain}.dkim.fmhosted.com
+               TTL: '172800'
