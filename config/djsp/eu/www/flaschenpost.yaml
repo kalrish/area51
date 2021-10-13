@@ -1,0 +1,13 @@
+---
+
+template_path: github_pages.yaml
+
+stack_tags:
+   Purpose: website
+   domain: flaschenpost.www.{{ domain }}
+   role: serving
+
+parameters:
+   FQDN: flaschenpost.www.{{ domain }}
+   GitHubName: {{ github_name }}
+   HostedZoneId: {{ hosted_zone_id }}
