@@ -1,0 +1,39 @@
+---
+
+
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Description: Certification Authority Authorization for a domain
+
+
+Parameters:
+
+   FQDN:
+      Description: Fully qualified domain name, including the root domain and any subdomains, for which AWS should be allowed to create certificates.
+      Type: String
+      AllowedPattern: '[^.]$'
+      ConstraintDescription: must not end with a period
+
+   HostedZoneId:
+      Description: ID of the Route 53 hosted zone in which to create DNS records.
+      Type: AWS::Route53::HostedZone::Id
+
+
+Resources:
+
+   Record:
+      Type: AWS::Route53::RecordSet
+      Properties:
+         HostedZoneId:
+            Ref: HostedZoneId
+         Name:
+            Fn::Sub: ${FQDN}.
+         Comment: AWS Certificate Manager
+         Type: CAA
+         ResourceRecords:
+            - 0 issue "amazon.com"
+            - 0 issue "amazonaws.com"
+            - 0 issue "amazontrust.com"
+            - 0 issue "awstrust.com"
+         TTL: '172800'
