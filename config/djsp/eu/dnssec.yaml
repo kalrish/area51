@@ -1,0 +1,10 @@
+---
+
+template_path: dnssec.yaml
+
+stack_tags:
+   Purpose: dns
+   domain: {{ domain }}
+
+parameters:
+   HostedZoneId: {{ hosted_zone_id }}
