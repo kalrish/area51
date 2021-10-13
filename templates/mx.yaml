@@ -1,0 +1,38 @@
+---
+
+
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Description: DNS record for e-mail
+
+
+Parameters:
+
+   Domain:
+      Description: DNS domain name.
+      Type: String
+
+   HostedZoneId:
+      Description: ID of the Route 53 hosted zone in which to create DNS records.
+      Type: AWS::Route53::HostedZone::Id
+
+   Targets:
+      Description: MX records.
+      Type: CommaDelimitedList
+
+
+Resources:
+
+   Record:
+      Type: AWS::Route53::RecordSet
+      Properties:
+         HostedZoneId:
+            Ref: HostedZoneId
+         Name:
+            Fn::Sub: ${Domain}.
+         Comment: E-Mail
+         Type: MX
+         ResourceRecords:
+            Ref: Targets
+         TTL: '600'
