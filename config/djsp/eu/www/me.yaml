@@ -1,0 +1,13 @@
+---
+
+template_path: github_pages.yaml
+
+stack_tags:
+   Purpose: website
+   domain: www.{{ domain }}
+   role: serving
+
+parameters:
+   FQDN: www.{{ domain }}
+   GitHubName: {{ github_name }}
+   HostedZoneId: {{ hosted_zone_id }}
