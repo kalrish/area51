@@ -1,0 +1,14 @@
+---
+
+template_path: email.yaml
+
+stack_tags:
+   Purpose: dns
+   domain: {{ domain }}
+
+parameters:
+   Domain: {{ domain }}
+   HostedZoneId: {{ hosted_zone_id }}
+   Targets:
+      - 10 in1-smtp.messagingengine.com
+      - 20 in2-smtp.messagingengine.com
