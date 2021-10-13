@@ -1,0 +1,39 @@
+---
+
+
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Description: DNS record for e-mail SPF
+
+
+Parameters:
+
+   Domain:
+      Description: DNS domain name.
+      Type: String
+
+   HostedZoneId:
+      Description: ID of the Route 53 hosted zone in which to create DNS records.
+      Type: AWS::Route53::HostedZone::Id
+
+   Value:
+      Description: SPF line.
+      Type: String
+
+
+Resources:
+
+   Record:
+      Type: AWS::Route53::RecordSet
+      Properties:
+         HostedZoneId:
+            Ref: HostedZoneId
+         Name:
+            Fn::Sub: ${Domain}.
+         Comment: Email SPF
+         Type: TXT
+         ResourceRecords:
+            -
+               Fn::Sub: '"${Value}"'
+         TTL: '172800'
