@@ -1,0 +1,11 @@
+---
+
+template_path: email-dkim-fastmail.yaml
+
+stack_tags:
+   Purpose: email
+   domain: {{ domain }}
+
+parameters:
+   Domain: {{ domain }}
+   HostedZoneId: {{ hosted_zone_id }}
